@@ -1,0 +1,79 @@
+import java.io.File;
+
+import java.util.HashMap;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+
+import com.microsoft.edge.seleniumtools.EdgeDriver;
+import com.microsoft.edge.seleniumtools.EdgeOptions;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+public class DownloadFileXML_InSelenium_Edge {
+
+	public static void main(String[] args) {
+		String downloadLocation="C:\\Users\\p50043948\\OneDrive - Capita\\Documents\\AutoAppDownload";
+		
+		WebDriver driver;
+
+		EdgeOptions edgeOptions = new EdgeOptions().addArguments("--safebrowsing-disable-download-protection", "--safebrowsing-disable-extension-blacklist");
+        
+        
+        HashMap<String, Object> pref=new HashMap<String, Object>();
+        pref.put("plugins.always_open_pdf_externally", true);
+        pref.put("download.prompt_for_download", false);
+//      pref.put("download.extensions_to_open", "xml");
+        pref.put("safebrowsing.enabled", true);
+        pref.put("download.default_directory", downloadLocation);
+        pref.put("profile.default_content_settings.popups", 0);
+/*
+        pref.put("profile.default_content_settings.popups", 0);
+        pref.put("profile.default_content_setting_values.notifications", 2);       
+        pref.put("profile.default_content_setting_values.automatic_downloads" , true);        
+        pref.put("profile.content_settings.pattern_pairs.*,*.multiple-automatic-downloads",true);*/
+        
+        edgeOptions.setAcceptInsecureCerts(true);
+        edgeOptions.setExperimentalOption("prefs", pref);
+        
+        
+      //Using WebDriverManager to make the driver initialization independent of browser driver exe
+		WebDriverManager.edgedriver().setup();
+		driver = new EdgeDriver(edgeOptions);
+		
+		driver.get("https://www.cellml.org/Members/stevens/docs/sample.xml/view");
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		driver.findElement(By.xpath("//a/span[text()='sample.xml']")).click();
+		
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		File filelocator=new File(downloadLocation);
+		
+		File[] totalfiles=filelocator.listFiles();
+		
+		for(File temp:totalfiles) {
+			if(temp.getName().equals("sample.xml")) {
+				System.out.println("Success");
+				
+				//deleting the file after assertion so that next download will not conflict the file name
+				temp.delete();
+				break;
+			}
+			
+		}
+		
+		driver.close();
+
+	}
+
+}
