@@ -1,0 +1,65 @@
+package Package1;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.List;
+import java.util.Properties;
+
+public class propertiesFileHandling {
+	
+	public static  File file;
+	public static  Properties prop;
+	public static  FileInputStream fis;
+	
+	public static void main(String args[]) {
+		
+		initializeProp();
+				
+		List<String> values=Arrays.asList(readProperty("name").split(","));
+		
+		System.out.println(values);
+		
+		System.out.println(decodeString(readProperty("password")));
+		
+//		System.out.println(Arrays.toString(values[1]));
+		
+			
+		}
+	
+	public static void initializeProp() {
+		file = new File(System.getProperty("user.dir")+"//src//Package1//test.properties");
+		try {
+			fis = new FileInputStream(file);
+			prop = new Properties();
+			prop.load(fis);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			System.out.println("FileNotFoundException" + e.getMessage());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+		// Method to read a property from properties file
+		public static String readProperty(String property) {
+			return prop.getProperty(property);
+		
+		
+	}
+		
+		public static String encodeString(String String) {
+			return Base64.getEncoder().encodeToString(String.getBytes());
+		}
+		
+		public static String decodeString(String encodedString) {
+			byte[] actualByte=Base64.getDecoder().decode(encodedString);
+			String actualString=new String(actualByte);
+			return  actualString;
+		}
+	
+}
