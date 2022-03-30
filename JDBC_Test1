@@ -1,0 +1,78 @@
+import java.sql.Connection;
+
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class JDBC_Test1 {
+	public static void main(String args[]) {
+		JDBC_Test1 JDBC_Test1=new JDBC_Test1();
+		JDBC_Test1.connectSqlServerUseURL();
+	}
+	
+	public synchronized void connectSqlServerUseURL()
+	{
+	    // Build sql server jdbc connection url use sql server account authentication.
+	    String sqlServerConnectionUrl = "jdbc:sqlserver://sqlfg-web-q01-uksouth.database.windows.net:1433;databaseName=fieldsmart;user=fieldsmartqa;password=F!3ld$m@rt123F!3ld$m@rt123";
+	            
+	    // Use windows authentication. 
+	    //String sqlServerConnectionUrl = "jdbc:sqlserver://localhost:1433;databaseName=TestDB;integratedSecurity=true;";
+	    
+	    // Declare the JDBC objects.
+	    Connection dbConn = null;
+	    Statement stmt = null;
+	    ResultSet rs = null;
+	    
+	          try {
+	               // Load jdbc driver class.
+	               Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+	                // Get connection.    
+//	               dbConn = DriverManager.getConnection(sqlServerConnectionUrl);
+	               dbConn = DriverManager.getConnection("jdbc:sqlserver://sqlfg-web-q01-uksouth.database.windows.net:1433;databaseName=fieldsmart", "fieldsmartqa", "F!3ld$m@rt123F!3ld$m@rt123");
+	            
+	                // Execute sql and return data result.
+	                String SQL = "Select * from [dbo].[Invitations] where Name='EXPIRED'";
+	                stmt = dbConn.createStatement();
+	                rs = stmt.executeQuery(SQL);
+	                ResultSetMetaData rmd=rs.getMetaData();
+	                // Loop the data result and display the data.
+	                while (rs.next()) {
+	                	
+	                    System.out.println(rs.getString("InvitationType"));
+	                }
+	           }catch (Exception ex) {
+	               ex.printStackTrace();
+	           }finally {
+	        if (rs != null) 
+	        {
+	            try { 
+	                rs.close(); 
+	            }catch(Exception ex) {
+	                ex.printStackTrace();
+	            }
+	        }
+	                
+	        if (stmt != null) 
+	        {
+	            try { 
+	                stmt.close(); 
+	            }catch(Exception ex) 
+	            {
+	                ex.printStackTrace();
+	            }
+	        }
+	                
+	        if (dbConn != null) 
+	        {
+	            try { 
+	                dbConn.close(); 
+	            } catch(Exception ex) {
+	                ex.printStackTrace();                    
+	            }
+	        }
+	    }
+	}
+}
